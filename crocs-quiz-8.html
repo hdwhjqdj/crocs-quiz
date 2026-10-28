@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f0f8f4">
+<title>测测洞洞鞋是不是你的天命鞋</title>
+<style>
+  :root{
+    --bg:#f0f8f4;
+    --card:#ffffff;
+    --ink:#123e34;
+    --ink2:#2c5c50;
+    --muted:#6f9188;
+    --rule:#cfe5dc;
+    --mint:#18a37a;
+    --mint2:#39c496;
+    --deep:#0d4437;
+    --candy:#ffb84d;
+    --candy2:#ffd58a;
+    --tint:#e4f4ee;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:contain;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(18,62,52,.075) 2.4px, transparent 2.6px),
+      radial-gradient(650px 520px at 88% -8%, rgba(57,196,150,.16), transparent 62%),
+      radial-gradient(700px 620px at -12% 44%, rgba(255,184,77,.14), transparent 62%);
+    background-size:24px 24px, auto, auto;
+  }
+  [hidden]{display:none !important}
+  button{font-family:inherit; font-size:inherit; color:inherit; border:none; background:none; cursor:pointer; touch-action:manipulation}
+  .app{max-width:520px; margin:0 auto; background:transparent; min-height:100vh; min-height:100svh; position:relative; z-index:1}
+  .screen{min-height:100vh; min-height:100svh; display:flex; flex-direction:column}
+
+  /* ---------- 封面 ---------- */
+  #s-cover{padding:calc(32px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); position:relative}
+  #s-cover>div{
+    display:flex; flex-direction:column; flex:1; min-height:0; position:relative; z-index:2;
+    border-radius:30px; padding:26px 20px 22px;
+    background:linear-gradient(180deg, #ffffff, #f7fcfa);
+    box-shadow:0 0 0 5px rgba(24,163,122,.10), 0 22px 54px rgba(13,68,55,.13);
+  }
+  .kicker{
+    display:inline-block; align-self:flex-start; font-size:10.5px; letter-spacing:.26em;
+    color:#fff; background:var(--mint); font-weight:800; padding:5px 12px; border-radius:99px;
+  }
+  .cover-mid{flex:1; display:flex; flex-direction:column; justify-content:center; padding:20px 0}
+  .cover-title{
+    font-size:clamp(38px, 12.5vw, 54px); line-height:1.02; font-weight:900; letter-spacing:-2.5px;
+    margin:18px 0 12px; color:var(--deep);
+  }
+  .cover-title b{color:var(--mint); position:relative}
+  .cover-title b::after{
+    content:""; position:absolute; left:0; right:0; bottom:2px; height:10px;
+    background:var(--candy2); border-radius:99px; z-index:-1; opacity:.85;
+  }
+  .cover-sub{font-size:16px; color:var(--ink2); font-weight:700; margin:0 0 14px}
+  .cover-desc{font-size:14px; color:var(--muted); margin:0 0 20px; line-height:1.85; padding-left:14px; border-left:3px solid var(--mint)}
+  .facts{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px}
+  .fact{
+    background:var(--tint); border-radius:99px; padding:6px 14px;
+    font-size:12px; color:var(--ink2); font-weight:600;
+  }
+  .fact b{color:var(--mint); font-weight:900}
+  .btn{display:flex; align-items:center; justify-content:center; width:100%; min-height:60px; border-radius:99px; font-size:16.5px; font-weight:900; letter-spacing:.04em; transition:transform .12s ease, box-shadow .2s ease}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{
+    background:linear-gradient(180deg, var(--mint2), var(--mint));
+    color:#fff; box-shadow:0 8px 0 var(--deep), 0 14px 26px rgba(13,68,55,.22);
+  }
+  .btn-primary:active{box-shadow:0 3px 0 var(--deep), 0 6px 14px rgba(13,68,55,.2); transform:translateY(4px)}
+  .cover-note{font-size:11px; color:var(--muted); text-align:center; margin:14px 0 0; line-height:1.8}
+  .deco{position:absolute; pointer-events:none; user-select:none; z-index:3; color:var(--mint); opacity:.5; font-weight:900}
+  .deco-1{top:calc(52px + env(safe-area-inset-top)); right:24px; font-size:15px; letter-spacing:3px}
+  .deco-2{top:150px; left:16px; font-size:13px; letter-spacing:2px; opacity:.35}
+  .deco-3{bottom:160px; right:18px; font-size:13px; letter-spacing:2px; opacity:.35}
+  .deco-4{top:290px; left:20px; font-size:11px; letter-spacing:2px; opacity:.28}
+  .deco-5{bottom:96px; left:18px; font-size:12px; letter-spacing:2px; opacity:.3}
+  .deco-6{top:214px; right:20px; font-size:20px; opacity:.4}
+
+  /* ---------- 答题 ---------- */
+  .qbar{
+    position:sticky; top:0; z-index:5;
+    background:rgba(240,248,244,.96); backdrop-filter:blur(10px);
+    padding:calc(12px + env(safe-area-inset-top)) 18px 10px;
+  }
+  .qbar-row{display:flex; align-items:center; gap:12px}
+  .iconbtn{
+    width:38px; height:38px; border-radius:50%; background:#fff; color:var(--mint);
+    display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900;
+    box-shadow:0 3px 10px rgba(13,68,55,.1);
+  }
+  .iconbtn:disabled{opacity:.32}
+  .qmeta{flex:1}
+  .qcount{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:7px; font-weight:600}
+  .qcount b{color:var(--deep); font-weight:900}
+  .pbar{
+    height:12px; background:#fff; border-radius:99px; overflow:hidden;
+    box-shadow:inset 0 2px 4px rgba(13,68,55,.1);
+  }
+  .pbar i{
+    display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg, var(--candy) 0%, var(--mint2) 55%, var(--mint) 100%);
+    transition:width .32s cubic-bezier(.2,.8,.2,1);
+  }
+  .qbody{flex:1; padding:28px 20px calc(30px + env(safe-area-inset-bottom)); display:flex; flex-direction:column}
+  .qno{
+    display:inline-block; align-self:flex-start; font-size:10.5px; letter-spacing:.2em;
+    color:var(--mint); font-weight:900; background:var(--tint); padding:4px 12px; border-radius:99px;
+    margin-bottom:14px;
+  }
+  .qtext{
+    font-size:21px; line-height:1.5; font-weight:800; letter-spacing:-.3px; margin:0 0 8px; color:var(--deep);
+  }
+  .hint{font-size:12px; color:var(--muted); margin:0 0 24px}
+  .opts{display:flex; flex-direction:column; gap:12px}
+  .opt{
+    background:#fff; border-radius:20px; padding:16px 18px;
+    text-align:left; font-size:15px; line-height:1.6; min-height:62px; display:flex; align-items:center;
+    transition:transform .12s ease, box-shadow .18s ease, background .18s ease;
+    box-shadow:0 3px 0 rgba(207,229,220,.9), 0 8px 18px rgba(13,68,55,.06);
+  }
+  .opt:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(207,229,220,.9)}
+  .opt.on{
+    background:linear-gradient(180deg, #ffffff, var(--tint));
+    box-shadow:0 0 0 2.5px var(--mint), 0 8px 22px rgba(24,163,122,.18);
+  }
+  .opt .dot{
+    width:20px; height:20px; border-radius:50%; margin-right:13px; flex:none;
+    background:#e8f2ee; box-shadow:inset 0 2px 3px rgba(13,68,55,.14);
+    transition:background .16s, box-shadow .16s;
+  }
+  .opt.on .dot{background:var(--mint); box-shadow:0 0 0 4px rgba(57,196,150,.24), inset 0 0 0 5px #fff}
+  .qfoot{margin-top:auto; padding-top:20px; font-size:11px; color:var(--muted)}
+
+  /* ---------- 加载 ---------- */
+  #loading{position:fixed; inset:0; background:var(--bg); z-index:40; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px}
+  .spinner{
+    width:42px; height:42px; border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, var(--bg) 45%, var(--mint) 47%, var(--mint) 62%, var(--bg) 64%);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loading p{font-size:13px; color:var(--deep); font-weight:700}
+
+  /* ---------- 结果 ---------- */
+  #s-result{padding:calc(26px + env(safe-area-inset-top)) 18px calc(26px + env(safe-area-inset-bottom))}
+  .r-kicker{text-align:center; margin-bottom:14px}
+  .r-kicker span{display:inline-block; font-size:10.5px; letter-spacing:.24em; color:#fff; background:var(--mint); font-weight:900; padding:5px 14px; border-radius:99px}
+  .r-hero{
+    border-radius:32px; padding:30px 22px 26px; text-align:center;
+    background:linear-gradient(180deg, #ffffff, #f4fbf8);
+    box-shadow:0 0 0 5px rgba(24,163,122,.10), 0 20px 46px rgba(13,68,55,.12);
+  }
+  .r-emoji{font-size:64px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 6px 10px rgba(13,68,55,.14))}
+  .r-type{font-size:30px; font-weight:900; letter-spacing:-1px; margin:0 0 6px; color:var(--deep); line-height:1.15}
+  .r-tagline{font-size:13px; color:var(--ink2); margin:0 0 20px; font-weight:600}
+  .r-score{display:flex; justify-content:center; gap:18px}
+  .r-score div{flex:1; background:var(--tint); border-radius:18px; padding:12px 4px}
+  .r-score b{display:block; font-size:26px; color:var(--deep); font-weight:900; line-height:1.15}
+  .r-score b.big{font-size:32px; color:var(--mint)}
+  .r-score span{font-size:10.5px; color:var(--muted); font-weight:600}
+  .r-block{
+    margin-top:14px; border-radius:22px; padding:18px; background:#fff;
+    box-shadow:0 3px 0 rgba(207,229,220,.9), 0 10px 22px rgba(13,68,55,.05);
+  }
+  .r-block h3{margin:0 0 10px; font-size:11px; letter-spacing:.2em; color:var(--mint); font-weight:900}
+  .r-block p{margin:0; font-size:14.5px; line-height:1.9; color:var(--ink2)}
+  .r-quote{font-size:15.5px; font-weight:700; color:var(--ink)}
+  .r-list{margin:0; padding:0; list-style:none}
+  .r-list li{font-size:14.5px; line-height:1.8; color:var(--ink2); padding-left:22px; position:relative; margin-bottom:8px}
+  .r-list li::before{content:"∘"; position:absolute; left:4px; top:-2px; color:var(--mint); font-weight:900; font-size:16px}
+  .r-warn{background:var(--tint); box-shadow:none}
+  .r-warn h3{color:var(--deep)}
+  .r-warn p{color:var(--muted); font-size:13px}
+  .r-actions{margin-top:18px; display:flex; flex-direction:column; gap:10px}
+  .btn-ghost{background:#fff; color:var(--mint); border-radius:99px; min-height:52px; box-shadow:0 3px 0 rgba(207,229,220,.9), 0 8px 16px rgba(13,68,55,.05)}
+  .r-foot{margin-top:16px; text-align:center; font-size:11px; color:var(--muted); line-height:1.9}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section id="s-cover" class="screen">
+    <div>
+      <span class="kicker">DESTINY SHOE TEST</span>
+      <div class="cover-mid">
+        <h1 class="cover-title">洞洞鞋是<br>你的<b>天命鞋</b>吗</h1>
+        <p class="cover-sub">有些人嘴上嫌弃，脚上诚实。</p>
+        <p class="cover-desc">8 道速测题，从脚感、透气、后跟带、走路四个维度快速抽样，检测你和洞洞鞋的八字。测完你就知道：你到底是洞门弟子，还是只敢在家偷偷穿。</p>
+        <div class="facts">
+          <span class="fact"><b>8</b> 道速测题</span>
+          <span class="fact">约 <b>1</b> 分钟</span>
+          <span class="fact">仅供娱乐</span>
+        </div>
+        <button class="btn btn-primary" id="btn-start">开始测八字</button>
+        <p class="cover-note">娱乐向内容 · 不构成任何购物建议<br>毕竟买了不穿，浪费的是你自己的钱</p>
+      </div>
+    </div>
+    <span class="deco deco-1">∘∘∘</span>
+    <span class="deco deco-2">∘∘</span>
+    <span class="deco deco-3">∘∘∘</span>
+    <span class="deco deco-4">∘∘</span>
+    <span class="deco deco-5">∘∘</span>
+    <span class="deco deco-6">🩴</span>
+  </section>
+
+  <!-- 答题 -->
+  <section id="s-quiz" class="screen" hidden>
+    <div class="qbar">
+      <div class="qbar-row">
+        <button class="iconbtn" id="btn-prev" aria-label="上一题">‹</button>
+        <div class="qmeta">
+          <div class="qcount"><b id="qno">第 1 题</b><span id="qtotal">/ 18 题</span></div>
+          <div class="pbar"><i id="pfill"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="qbody">
+      <div class="qno" id="qdim">FOOT FEEL</div>
+      <h2 class="qtext" id="qtext"></h2>
+      <p class="hint" id="qhint"></p>
+      <div class="opts" id="qopts"></div>
+      <div class="qfoot">选你真实会做的那个，不是你觉得正确的那个</div>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section id="s-result" class="screen" hidden>
+    <div class="r-kicker"><span>八字已出</span></div>
+    <div class="r-hero">
+      <div class="r-emoji" id="r-emoji"></div>
+      <h2 class="r-type" id="r-type"></h2>
+      <p class="r-tagline" id="r-tagline"></p>
+      <div class="r-score">
+        <div><b class="big" id="r-index">0</b><span>天命指数</span></div>
+        <div><b id="r-signal">0</b><span>松弛度</span></div>
+        <div><b id="r-base">0</b><span>无包袱度</span></div>
+      </div>
+    </div>
+    <div class="r-block"><h3>判词</h3><p class="r-quote" id="r-quote"></p></div>
+    <div class="r-block"><h3>八字解析</h3><p id="r-decoding"></p></div>
+    <div class="r-block"><h3>一句实话</h3><p id="r-truth"></p></div>
+    <div class="r-block"><h3>穿鞋建议</h3><ul class="r-list" id="r-todo"></ul></div>
+    <div class="r-block r-warn"><h3>提醒</h3><p>洞洞鞋不是信仰，也不是什么人生答案。穿它的人有穿它的自在，不穿的人有不穿的理由。一双鞋合不合适，只有走过一段路才知道——这件事，任何测试都替不了你的脚。</p></div>
+    <div class="r-actions">
+      <button class="btn btn-primary" id="btn-share">生成分享文案</button>
+      <button class="btn btn-ghost" id="btn-quick">想看完整版 · 18 题深度测</button>
+      <button class="btn btn-ghost" id="btn-restart">重新测一次</button>
+    </div>
+    <div class="r-foot">测测洞洞鞋是不是你的天命鞋<br>娱乐向内容 · 脚舒服最重要</div>
+  </section>
+
+  <!-- 加载 -->
+  <div id="loading" hidden>
+    <div class="spinner"></div>
+    <p>正在给你的脚看八字…</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CONFIG = {
+    total: 8,
+    fullUrl: "crocs-quiz.html"
+  };
+
+  // 维度：fit 脚感 / hole 透气 / strap 后跟带 / walk 走路
+  var DIMS = {
+    fit:{name:"脚感"},
+    hole:{name:"透气"},
+    strap:{name:"后跟带"},
+    walk:{name:"走路"}
+  };
+
+  // 前 12 题测松弛度（4 维 × 3 题），后 6 题测无包袱度（axis:"b"）
+  // 前 4 题测松弛度（4 维各 1 题），后 4 题测无包袱度（axis:"b"）
+  var QUESTIONS = [
+    {dim:"fit", hint:"第一眼，脚比脑子诚实。",
+     text:"挑鞋的时候，你的第一反应是看什么？",
+     opts:[
+       {t:"先踩一脚，软不软、磨不磨", s:2},
+       {t:"先看款式，再试脚感", s:1},
+       {t:"必须好看，难看的话舒服也不买", s:0}]},
+    {dim:"hole", hint:"那排孔，是功能还是审美，答案很分人。",
+     text:"第一次看到洞洞鞋那一排孔，你的第一反应是？",
+     opts:[
+       {t:"透气，这是个聪明的设计", s:2},
+       {t:"有点丑，但好像能接受", s:1},
+       {t:"密集恐惧，我生理性不适", s:0}]},
+    {dim:"strap", hint:"那根带子，才是灵魂配件。",
+     text:"出门的时候，后跟带你会怎么处理？",
+     opts:[
+       {t:"随它去，趿拉着走最舒服", s:2},
+       {t:"看场合，正式点就扣上", s:1},
+       {t:"一定扣好，不然像没穿好鞋", s:0}]},
+    {dim:"walk", hint:"工具还是表达，两条完全不同的路。",
+     text:"对你来说，鞋是什么？",
+     opts:[
+       {t:"工具，能走就行", s:2},
+       {t:"工具，但也得能看", s:1},
+       {t:"是表达，是今天想成为谁", s:0}]},
+    {axis:"b", hint:"最后一组，关于你在不在意别人的眼光。",
+     text:"有人当面说：你这鞋好丑。",
+     opts:[
+       {t:"那又怎样，我脚舒服", s:2},
+       {t:"会有点在意，但不会因此不穿", s:1},
+       {t:"我可能当场就想换掉了", s:0}]},
+    {axis:"b", hint:"便利店是最没有压力的社交场合。",
+     text:"半夜下楼去便利店，你会穿什么？",
+     opts:[
+       {t:"随便抓一双，能下楼就行", s:2},
+       {t:"会稍微看一下，别太离谱", s:1},
+       {t:"要能见人，万一碰到熟人呢", s:0}]},
+    {axis:"b", hint:"好看和舒服，二选一的时候到了。",
+     text:"一双鞋被夸好看，另一双更舒服，价格一样。",
+     opts:[
+       {t:"买舒服的那双，我穿不是给别人看的", s:2},
+       {t:"犹豫很久，可能看当天心情", s:1},
+       {t:"买好看的那双，舒服可以克服", s:0}]},
+    {axis:"b", hint:"最后一题，说出你的真心话。",
+     text:"如果测出来，洞洞鞋真的是你的天命鞋。",
+     opts:[
+       {t:"立刻下单，还要配一套鞋花", s:2},
+       {t:"先买一双试试，不好再说", s:1},
+       {t:"天命也不行，我过不了自己那关", s:0}]}
+  ];
+
+  var TYPES = {
+    door:{
+      name:"洞门弟子", emoji:"🩴",
+      tagline:"天命所归，你早就是他们的人了。",
+      quote:"你和洞洞鞋的八字，是那种不用算也知道的合。",
+      decoding:"脚感优先、能忍脏、后跟带永远趿拉着、别人说什么你根本不听——你不是在穿一双鞋，你是在过一种生活方式。你和洞洞鞋的关系不是审美选择，是价值观一致：舒服是底线，体面是加分项，别人的目光是背景音。这种人穿什么都松弛，只不过洞洞鞋刚好长成了你的样子。",
+      truth:"唯一的风险是：太松弛的人容易被误解成不在乎。你不是不在乎，你只是把在乎用在了别的地方。偶尔也要让人看见，你的随意是有选择的。",
+      todo:["给自己配一套鞋花，把松弛做成风格，别只是随便","正式场合也留一双能撑住的鞋，松弛需要底气","下次有人说你鞋丑，笑着回一句：我穿得挺开心的"],
+      fit:"洞门不是终点，是你早就选好了的那条路。"
+    },
+    mouth:{
+      name:"口嫌体正直", emoji:"🤐",
+      tagline:"嘴上说不要，脚上很诚实。",
+      quote:"你嫌弃它，但你的脚已经在投票了。",
+      decoding:"你的松弛度很高，但时尚包袱还没完全放下：你会说这鞋丑，会在意别人怎么看，会觉得穿出去有点丢人——可你偏偏又最受不了磨脚、最爱趿拉着走、最懒得管鞋脏不脏。这就是典型的口嫌体正直：审美上抗拒，身体上投降。你不是不喜欢它，你是不好意思喜欢它。",
+      truth:"承认自己喜欢一双被群嘲的鞋，需要一点勇气。但真正丢人的从来不是鞋，是为了别人的目光，穿一双让自己脚疼的鞋走一整天。",
+      todo:["先在家穿一周，把它变成习惯，而不是宣言","找一个你信任的人，先在他面前穿出去","告诉自己：喜欢一个东西不需要理由，也不需要批准"],
+      fit:"身体已经替你决定了，你只差一句承认。"
+    },
+    look:{
+      name:"好看大过天", emoji:"💅",
+      tagline:"你不怕被看，你就是不肯将就。",
+      quote:"你不是怕别人说，你是自己那关过不去。",
+      decoding:"你的松弛度低、无包袱度高——这个组合很有意思：你根本不在乎别人怎么评价你的鞋，但你自己对好看这件事有极高标准。洞洞鞋在你这里不是社交风险，是审美事故。你不需要合群，你也不怕被议论，你只是单纯地觉得：一双鞋不好看，再舒服也没意义。这种人其实很难得，因为你的选择是纯粹的，不是为了讨好谁。",
+      truth:"唯一的隐患是：你可能会因为审美坚持，长期忍受一双磨脚的鞋，然后把它解释成值得。好看和舒服从来不是敌人，你只是还没遇到那双两全的。",
+      todo:["承认磨脚就是磨脚，别用审美给它找理由","去看那些好看又舒服的鞋，这个品类比你想象的宽","保持你的标准，但别让它变成对自己的惩罚"],
+      fit:"你不需要天命鞋，你只需要一双不用忍的鞋。"
+    },
+    no:{
+      name:"基因排斥", emoji:"⛔",
+      tagline:"八字不合，硬穿就是刑具。",
+      quote:"你和洞洞鞋，属于彼此都别勉强的那种关系。",
+      decoding:"你在意好看、在意场合、在意别人怎么看，这没什么错——你只是把鞋当成表达，而不是工具。那排孔在你眼里不是透气，是灾难；趿拉着走不是松弛，是没穿好。你需要的是一双撑得起你想成为的那个人的鞋，而不是一双让你放松的鞋。这两个需求，本来就不冲突，只是洞洞鞋刚好不满足你。",
+      truth:"不用因为全世界都在穿就怀疑自己。合不来就是合不来，这跟你有没有品味无关。真正的问题是：你现在穿的鞋，是不是也在让你脚疼？如果是，那值得换的可能是别的鞋，不是洞洞鞋。",
+      todo:["找一双既好看又不磨脚的鞋，这件事是可以两全的","别为了合群买一双你根本不想穿的鞋","承认自己的标准，然后按标准挑，不丢人"],
+      fit:"天命鞋不一定是洞洞鞋，但一定是一双你不后悔的鞋。"
+    }
+  };
+
+  // ---------- 状态 ----------
+  var idx = 0;
+  var answers = new Array(CONFIG.total).fill(null);
+
+  var $ = function(id){ return document.getElementById(id); };
+  var coverEl = $("s-cover"), quizEl = $("s-quiz"), resultEl = $("s-result"), loadingEl = $("loading");
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  function renderQ(){
+    var q = QUESTIONS[idx];
+    var dimName = q.dim ? DIMS[q.dim].name : "无包袱度";
+    $("qdim").textContent = (q.dim ? "FOOT · " : "EGO · ") + dimName;
+    $("qno").textContent = "第 " + (idx+1) + " 题";
+    $("qtotal").textContent = "/ " + CONFIG.total + " 题";
+    $("pfill").style.width = (idx / CONFIG.total * 100) + "%";
+    $("qtext").textContent = q.text;
+    $("qhint").textContent = q.hint;
+    $("btn-prev").disabled = (idx === 0);
+
+    var box = $("qopts");
+    box.innerHTML = "";
+    var opts = shuffle(q.opts);
+    opts.forEach(function(o){
+      var b = document.createElement("button");
+      b.className = "opt" + (answers[idx] === o.s ? " on" : "");
+      b.innerHTML = '<span class="dot"></span><span>' + o.t + '</span>';
+      b.onclick = function(){
+        answers[idx] = o.s;
+        var all = box.querySelectorAll(".opt");
+        for(var k=0;k<all.length;k++) all[k].classList.remove("on");
+        b.classList.add("on");
+        setTimeout(function(){
+          if(idx < CONFIG.total-1){ idx++; renderQ(); window.scrollTo(0,0); }
+          else{ finish(); }
+        }, 260);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function calc(){
+    var coreRaw = 0, selfRaw = 0, i;
+    for(i=0;i<4;i++) coreRaw += answers[i];
+    for(i=4;i<8;i++) selfRaw += answers[i];
+    var core = Math.round(coreRaw / 8 * 100);
+    var self = Math.round(selfRaw / 8 * 100);
+    var index = Math.round(core * 0.6 + self * 0.4);
+    var key;
+    var coreHigh = core >= 50, selfHigh = self >= 50;
+    if(coreHigh && selfHigh) key = "door";
+    else if(coreHigh && !selfHigh) key = "mouth";
+    else if(!coreHigh && selfHigh) key = "look";
+    else key = "no";
+    return {core:core, self:self, index:index, key:key};
+  }
+
+  function renderResult(){
+    var r = calc();
+    var t = TYPES[r.key];
+    $("r-emoji").textContent = t.emoji;
+    $("r-type").textContent = t.name;
+    $("r-tagline").textContent = t.tagline;
+    $("r-index").textContent = r.index;
+    $("r-signal").textContent = r.core;
+    $("r-base").textContent = r.self;
+    $("r-quote").textContent = t.quote;
+    $("r-decoding").textContent = t.decoding;
+    $("r-truth").textContent = t.truth;
+    var ul = $("r-todo");
+    ul.innerHTML = "";
+    t.todo.forEach(function(x){
+      var li = document.createElement("li");
+      li.textContent = x;
+      ul.appendChild(li);
+    });
+  }
+
+  function finish(){
+    loadingEl.hidden = false;
+    setTimeout(function(){
+      loadingEl.hidden = true;
+      quizEl.hidden = true;
+      renderResult();
+      resultEl.hidden = false;
+      window.scrollTo(0,0);
+    }, 1400);
+  }
+
+  $("btn-start").onclick = function(){
+    coverEl.hidden = true;
+    quizEl.hidden = false;
+    idx = 0;
+    answers = new Array(CONFIG.total).fill(null);
+    renderQ();
+    window.scrollTo(0,0);
+  };
+
+  $("btn-prev").onclick = function(){
+    if(idx > 0){ idx--; renderQ(); window.scrollTo(0,0); }
+  };
+
+  $("btn-restart").onclick = function(){
+    resultEl.hidden = true;
+    coverEl.hidden = false;
+    window.scrollTo(0,0);
+  };
+
+  $("btn-quick").onclick = function(){
+    location.href = CONFIG.fullUrl;
+  };
+
+  $("btn-share").onclick = function(){
+    var r = calc();
+    var t = TYPES[r.key];
+    var text = "「洞洞鞋是不是你的天命鞋」我的结果：" + t.emoji + " " + t.name + "，天命指数 " + r.index + "/100。来测你的八字 → " + location.href;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        $("btn-share").textContent = "已复制，去粘贴吧";
+        setTimeout(function(){ $("btn-share").textContent = "生成分享文案"; }, 1600);
+      }, function(){
+        prompt("复制这段分享文案：", text);
+      });
+    }else{
+      prompt("复制这段分享文案：", text);
+    }
+  };
+})();
+</script>
+</body>
+</html>
